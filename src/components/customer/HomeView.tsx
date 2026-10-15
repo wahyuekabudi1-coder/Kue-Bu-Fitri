@@ -8,32 +8,32 @@ export const HomeView: React.FC = () => {
   const categories = [
     {
       title: 'Kue Ulang Tahun',
-      desc: 'Pilihan kue dengan tampilan menarik dan rasa nikmat',
+      desc: 'Kue ulang tahun dengan tampilan menarik dan pilihan rasa yang bisa disesuaikan.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDa8LTfZ34RoO438MF-EHf8dbTSe2ookM_7VK8XdkIfmIK2lyMw-vNizygkssQ-Ls6Thhb26AVcC4b1HHeW1kFpDyA3Oro_qz2yJXLg5l6kA9HgeU5y04YcbMNVscjuaRo2FUo-edJX7DAcbTlYcY20_o_4Lf-_-BaIKOMnszglSv2f295M3U5Qv8G2hJjClMGulAe4b8JIb8pp6jVowXiBjmwcQaGurUgB_dMC2eaxFgeF9KCXelQ'
     },
     {
       title: 'Kue Pernikahan',
-      desc: 'Kue pernikahan elegan yang bisa disesuaikan dengan tema acara',
+      desc: 'Kue pernikahan dengan desain yang bisa disesuaikan dengan tema acara.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5jvewi97GfOf_FvrcJCT2_nXn2fBpiVCzPfu8zAXONLlmIYAju9q5wvv9CYbmdHWjOkqgpmnrNeLIxZsJFQnOaVTCmwXbZqsN4T2wWwbCI-duc4wjn2i18ol_6x3Z5qaYCvGy0ZJMr-J5PSuqB7yDHJgVkZkFTP9BVpW3PC5crcN5bXhkJMRPwtS0Xp-QXmkLO-yzdXfyPn5ekr8fslRhf2yj7fM3mZreSr5UzZGfbpSlqlzCPow'
     },
     {
       title: 'Kue Basah',
-      desc: 'Aneka kue basah untuk teman minum teh dan acara keluarga',
+      desc: 'Aneka kue basah untuk teman minum teh, acara keluarga, dan berbagai kegiatan.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC2NXlYpV_zlpJWRXsPj5rAJqDC0iK17TpyOyAiT1361ioW7a5IQ6C54-n3x5OBChXOJ1WdeimZVtMQKr4WDic8GzLyLLQxC8BrTTyezlDaSAkj4IVnVbwz757WjRkoYCfCk4H-Punkbte8TVj8ax4-kgT40tvkhrrjhhctEq7LGJj7G6NiyEdyBTJz4HDkJmU4i43eahuvSkSON8JgJOAddW96uHXLyy_LZ1aU2fKIrKO4vnFOLn4'
     },
     {
       title: 'Brownies',
-      desc: 'Brownies dengan rasa cokelat nikmat, cocok untuk camilan atau hadiah',
+      desc: 'Brownies dengan rasa cokelat yang nikmat, cocok untuk camilan atau hadiah.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCY1At4pzQxYXof361fgFzhWqvqmEMP7xg-fyLegtCreJ6WXnl8PP5tc5cCLC_bQ_ciFjpCkVzI5qLqiINnWSeShqpRTQAczd4JbyvEP1tJGKIszNrr6cIynwNOg8H9lu1ZB3DUEbRVQ7LBT0UXk1Vusf95boU9Xd7jU5HLAf0S2jp9oZ88AkkqqB2F8VR5-tAgbE-4dSTFI5yAso1X6ZUJT1iyQqBGe03mCKA7ynDN6zXdaC-4AH4'
     },
     {
       title: 'Kue Tart',
-      desc: 'Kue tart lembut dengan keju dan buah segar pilihan',
+      desc: 'Kue tart lembut dengan pilihan rasa istimewa untuk momen spesial.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDlwUOW2SNw8uuvDyaTuBE1eWtA7iErvJG8YnY1pVLdYeFd1CM7hTE3KPpvWcPqrDJiw0XEQpTP-aaoexdKV9cr1AR4ODhZ5rbHXYUoRyZBHxzXnmrCkSPr-smns2Wtf4LrO7DnV_JihXsSKTs5yol2K9mhVxBXLCCQ1g5TPWxAffaJRyAu4fxSypci6y5x3efxUclowd2YMEzFPd-ZH1ZGrL4nd02iiK0Py5ZXmDz1JGzURPlLRac'
     },
     {
       title: 'Hampers dan Hantaran',
-      desc: 'Pilihan kue untuk hantaran dan bingkisan bagi orang tersayang',
+      desc: 'Pilihan kue untuk hantaran dan bingkisan bagi keluarga maupun orang tersayang.',
       img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCN_akFcojK1QFDACgixVBY7lbGblKtQUQk5yMTroSPQzMsARfFGp-Pf5G601fhecM54ckBlTZAVEIelSgJRUZ9JMKZz0uBWH5pde57QwPZaoVG_9tjDlwvwLtx1YsjFfzKrDCtasjOdNldRVWpTodvvV7lpUc6HLGzRgiI1Y70M-64dAyZk2Ng5XQX2sI__30WCUaG8RNV_5-yCrR8-99jv5oyTRZmMPEi7Yan7cpcB8B2KJhYGXs'
     }
   ];
@@ -246,7 +246,7 @@ export const HomeView: React.FC = () => {
                       }}
                       className="inline-flex items-center justify-center bg-[#C62828] hover:bg-[#9B1B1B] text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all cursor-pointer"
                     >
-                      Pesan
+                      Pesan Sekarang
                     </button>
                   </div>
                 </div>

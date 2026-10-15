@@ -3,7 +3,7 @@ import { useApp } from '../../context/AppContext';
 import { AppView } from '../../types';
 
 export const AdminSidebar: React.FC = () => {
-  const { currentView, setCurrentView, paymentVerifications } = useApp();
+  const { currentView, setCurrentView, paymentVerifications, logoutAdmin } = useApp();
   const pendingCount = paymentVerifications.filter(p => p.status === 'pending').length;
 
   const navItems: { label: string; view: AppView; icon: string; badge?: number }[] = [
@@ -64,7 +64,7 @@ export const AdminSidebar: React.FC = () => {
       </div>
 
       {/* Bottom Profile & Customer Store Link */}
-      <div className="pt-6 border-t border-[#EADFD9] space-y-4">
+      <div className="pt-6 border-t border-[#EADFD9] space-y-3">
         <button
           onClick={() => setCurrentView('beranda')}
           className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-[#705954] hover:text-[#C62828] hover:bg-[#FFF5E9] rounded-lg transition-colors cursor-pointer"
@@ -73,7 +73,15 @@ export const AdminSidebar: React.FC = () => {
           <span>Lihat Toko Pembeli</span>
         </button>
 
-        <div className="flex items-center gap-3 px-2 pt-2">
+        <button
+          onClick={logoutAdmin}
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[18px]">logout</span>
+          <span>Keluar (Logout)</span>
+        </button>
+
+        <div className="flex items-center gap-3 px-2 pt-2 border-t border-[#EADFD9]/60">
           <div className="w-9 h-9 rounded-full bg-[#FAF0E6] border border-[#EADFD9] flex items-center justify-center font-bold text-xs text-[#3B2925]">
             AD
           </div>

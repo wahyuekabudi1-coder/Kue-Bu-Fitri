@@ -3,15 +3,15 @@ import { Product, Order, OvenBatch, PaymentVerification, OvenSlotDay } from '../
 export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'prod-1',
-    slug: 'raspberry-pistachio',
+    slug: 'kue-tart-raspberry-pistachio',
     name: 'Kue Tart Raspberry Pistachio',
     category: 'birthday',
     categoryLabel: 'Kue Ulang Tahun',
     price: 385000,
     formattedPrice: 'Rp 385.000',
     leadTime: 'Pesan Min. H-2',
-    shortDesc: 'Kue tart lembut dengan selai raspberry segar dan sentuhan rasa kacang pistachio gurih.',
-    fullDesc: 'Dibuat dengan bahan pilihan berkualitas. Perpaduan bolu lembut, selai raspberry asli yang segar, dan krim pistachio gurih yang pas di lidah. Dibuat dengan perhatian pada rasa dan tampilan untuk ulang tahun dan acara spesial.',
+    shortDesc: 'Kue ulang tahun dengan tampilan menarik dan pilihan rasa yang bisa disesuaikan.',
+    fullDesc: 'Dibuat berdasarkan pesanan dengan bahan pilihan berkualitas. Perpaduan bolu lembut dengan selai raspberry dan kacang pistachio gurih yang dibuat dengan perhatian pada rasa dan tampilan. Cocok untuk ulang tahun dan acara spesial.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCX7fAc8ouzU3bsZdt5QKqKO6e8yKYt469NcG3sfJ5ynvsm9Ftv5Rjqj9t24wozcEJ1su0wLlgzRU4sFDmc7aVlyW5DekqWbB-jpT8qR2FSBBGrM6FSs6U3gOmx8ONz8nPvvqytPB7g3JRV0Mp0FPtmHaq8-TdMToOEd6NKwutYTQo1-iLbomavTRAAn9nbVthuQGZ609toLRxiN6f0HaPIkoeOis85q0AL8LLhfpinNcI_YjGzV60',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCX7fAc8ouzU3bsZdt5QKqKO6e8yKYt469NcG3sfJ5ynvsm9Ftv5Rjqj9t24wozcEJ1su0wLlgzRU4sFDmc7aVlyW5DekqWbB-jpT8qR2FSBBGrM6FSs6U3gOmx8ONz8nPvvqytPB7g3JRV0Mp0FPtmHaq8-TdMToOEd6NKwutYTQo1-iLbomavTRAAn9nbVthuQGZ609toLRxiN6f0HaPIkoeOis85q0AL8LLhfpinNcI_YjGzV60',
@@ -26,7 +26,7 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: 'Diameter 24 cm', servings: '12 - 18 Porsi', price: 750000, formattedPrice: 'Rp 750.000' }
     ],
     flavorProfile: ['Krim Pistachio Gurih', 'Selai Raspberry Segar', 'Bolu Lembut', 'Manis Pas'],
-    ingredients: ['Tepung terigu pilihan', 'Telur segar', 'Mentega pilihan', 'Kacang pistachio', 'Selai raspberry asli', 'Susu sapi segar'],
+    ingredients: ['Tepung terigu pilihan', 'Telur ayam segar', 'Mentega pilihan', 'Kacang pistachio', 'Selai raspberry', 'Susu sapi segar'],
     storageAdvice: 'Simpan di dalam lemari pendingin (kulkas). Sebaiknya dinikmati dalam 3 hari setelah diterima.'
   },
   {
@@ -38,8 +38,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 345000,
     formattedPrice: 'Rp 345.000',
     leadTime: 'Pesan Min. H-2',
-    shortDesc: 'Kue tart dengan lapisan cokelat lembut dan renyah, nikmat dan tidak terlalu manis.',
-    fullDesc: 'Kue tart dengan cokelat berkualitas dan tekstur krim yang lembut. Dibuat dengan perhatian pada rasa dan tampilan untuk memanjakan pecinta cokelat pada berbagai acara keluarga dan sahabat.',
+    shortDesc: 'Kue tart lembut dengan cokelat pilihan, cocok untuk merayakan momen spesial bersama keluarga.',
+    fullDesc: 'Dibuat dengan bahan pilihan berkualitas. Lapisan bolu cokelat dengan krim cokelat lembut yang pas di lidah dan tidak bikin enek. Dibuat dengan perhatian pada rasa dan tampilan.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDa8LTfZ34RoO438MF-EHf8dbTSe2ookM_7VK8XdkIfmIK2lyMw-vNizygkssQ-Ls6Thhb26AVcC4b1HHeW1kFpDyA3Oro_qz2yJXLg5l6kA9HgeU5y04YcbMNVscjuaRo2FUo-edJX7DAcbTlYcY20_o_4Lf-_-BaIKOMnszglSv2f295M3U5Qv8G2hJjClMGulAe4b8JIb8pp6jVowXiBjmwcQaGurUgB_dMC2eaxFgeF9KCXelQ',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDa8LTfZ34RoO438MF-EHf8dbTSe2ookM_7VK8XdkIfmIK2lyMw-vNizygkssQ-Ls6Thhb26AVcC4b1HHeW1kFpDyA3Oro_qz2yJXLg5l6kA9HgeU5y04YcbMNVscjuaRo2FUo-edJX7DAcbTlYcY20_o_4Lf-_-BaIKOMnszglSv2f295M3U5Qv8G2hJjClMGulAe4b8JIb8pp6jVowXiBjmwcQaGurUgB_dMC2eaxFgeF9KCXelQ'
@@ -50,21 +50,21 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: 'Diameter 18 cm', servings: '6 - 8 Porsi', price: 425000, formattedPrice: 'Rp 425.000' },
       { size: 'Diameter 20 cm', servings: '8 - 12 Porsi', price: 540000, formattedPrice: 'Rp 540.000' }
     ],
-    flavorProfile: ['Cokelat Kaya Rasa', 'Tekstur Lembut', 'Lapisan Renyah'],
-    ingredients: ['Cokelat bubuk dan leleh pilihan', 'Tepung terigu', 'Mentega pilihan', 'Telur segar', 'Krim susu'],
-    storageAdvice: 'Simpan dingin di kulkas agar tekstur cokelat tetap lembut dan kokoh.'
+    flavorProfile: ['Cokelat Pilihan', 'Tekstur Lembut', 'Manis Pas'],
+    ingredients: ['Cokelat pilihan', 'Tepung terigu', 'Mentega pilihan', 'Telur segar', 'Krim susu'],
+    storageAdvice: 'Simpan di dalam lemari pendingin (kulkas).'
   },
   {
     id: 'prod-3',
     slug: 'chiffon-cake-earl-grey',
-    name: 'Chiffon Cake Earl Grey & Berry',
+    name: 'Chiffon Cake Earl Grey & Buah',
     category: 'birthday',
     categoryLabel: 'Kue Ulang Tahun',
     price: 295000,
     formattedPrice: 'Rp 295.000',
     leadTime: 'Pesan Min. H-2',
-    shortDesc: 'Kue chiffon bertekstur lembut dan ringan dengan aroma teh wangi serta buah segar.',
-    fullDesc: 'Bolu chiffon dengan tekstur selembut kapas, dipadukan dengan aroma teh yang menenangkan dan hiasan buah segar pilihan. Sangat pas untuk teman minum teh atau perayaan ulang tahun.',
+    shortDesc: 'Kue ulang tahun dengan tampilan menarik dan pilihan rasa yang bisa disesuaikan.',
+    fullDesc: 'Bolu chiffon bertekstur lembut dan ringan dengan aroma teh yang wangi serta hiasan buah segar pilihan. Dibuat berdasarkan pesanan untuk menemani momen spesialmu.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuC2NXlYpV_zlpJWRXsPj5rAJqDC0iK17TpyOyAiT1361ioW7a5IQ6C54-n3x5OBChXOJ1WdeimZVtMQKr4WDic8GzLyLLQxC8BrTTyezlDaSAkj4IVnVbwz757WjRkoYCfCk4H-Punkbte8TVj8ax4-kgT40tvkhrrjhhctEq7LGJj7G6NiyEdyBTJz4HDkJmU4i43eahuvSkSON8JgJOAddW96uHXLyy_LZ1aU2fKIrKO4vnFOLn4',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuC2NXlYpV_zlpJWRXsPj5rAJqDC0iK17TpyOyAiT1361ioW7a5IQ6C54-n3x5OBChXOJ1WdeimZVtMQKr4WDic8GzLyLLQxC8BrTTyezlDaSAkj4IVnVbwz757WjRkoYCfCk4H-Punkbte8TVj8ax4-kgT40tvkhrrjhhctEq7LGJj7G6NiyEdyBTJz4HDkJmU4i43eahuvSkSON8JgJOAddW96uHXLyy_LZ1aU2fKIrKO4vnFOLn4'
@@ -73,9 +73,9 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: 'Diameter 18 cm', servings: '6 - 8 Porsi', price: 295000, formattedPrice: 'Rp 295.000' },
       { size: 'Diameter 20 cm', servings: '8 - 10 Porsi', price: 365000, formattedPrice: 'Rp 365.000' }
     ],
-    flavorProfile: ['Aroma Teh Harum', 'Sponge Ringan', 'Buah Segar Pilihan'],
-    ingredients: ['Ekstrak daun teh pilihan', 'Telur ayam segar', 'Tepung terigu halus', 'Gula pasir', 'Potongan buah segar'],
-    storageAdvice: 'Simpan di kulkas dan nikmati dalam keadaan sejuk.'
+    flavorProfile: ['Aroma Teh Wangi', 'Bolu Ringan', 'Buah Segar Pilihan'],
+    ingredients: ['Daun teh pilihan', 'Telur ayam segar', 'Tepung terigu', 'Gula pasir', 'Potongan buah segar'],
+    storageAdvice: 'Simpan di lemari pendingin dan sajikan dalam keadaan sejuk.'
   },
   {
     id: 'prod-4',
@@ -86,8 +86,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 320000,
     formattedPrice: 'Rp 320.000',
     leadTime: 'Pesan Min. H-2',
-    shortDesc: 'Kue keju panggang dengan bagian tengah yang lumer dan aroma karamel yang menggugah selera.',
-    fullDesc: 'Dibuat dari keju krim berkualitas dengan teknik pemanggangan pas sehingga bagian luar berwarna kecokelatan sedap dan bagian dalam tetap lembut lumer.',
+    shortDesc: 'Kue keju panggang lembut dengan rasa gurih manis yang pas dan aroma panggangan harum.',
+    fullDesc: 'Dibuat dengan bahan pilihan berkualitas. Tekstur bagian dalam lembut dan lumer, dengan permukaan kecokelatan yang harum. Cocok untuk acara keluarga dan hadiah.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDlwUOW2SNw8uuvDyaTuBE1eWtA7iErvJG8YnY1pVLdYeFd1CM7hTE3KPpvWcPqrDJiw0XEQpTP-aaoexdKV9cr1AR4ODhZ5rbHXYUoRyZBHxzXnmrCkSPr-smns2Wtf4LrO7DnV_JihXsSKTs5yol2K9mhVxBXLCCQ1g5TPWxAffaJRyAu4fxSypci6y5x3efxUclowd2YMEzFPd-ZH1ZGrL4nd02iiK0Py5ZXmDz1JGzURPlLRac',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuDlwUOW2SNw8uuvDyaTuBE1eWtA7iErvJG8YnY1pVLdYeFd1CM7hTE3KPpvWcPqrDJiw0XEQpTP-aaoexdKV9cr1AR4ODhZ5rbHXYUoRyZBHxzXnmrCkSPr-smns2Wtf4LrO7DnV_JihXsSKTs5yol2K9mhVxBXLCCQ1g5TPWxAffaJRyAu4fxSypci6y5x3efxUclowd2YMEzFPd-ZH1ZGrL4nd02iiK0Py5ZXmDz1JGzURPlLRac'
@@ -98,9 +98,9 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: 'Diameter 18 cm', servings: '6 - 8 Porsi', price: 395000, formattedPrice: 'Rp 395.000' },
       { size: 'Diameter 20 cm', servings: '8 - 12 Porsi', price: 495000, formattedPrice: 'Rp 495.000' }
     ],
-    flavorProfile: ['Keju Gurih Lembut', 'Aroma Panggang Wangi', 'Tekstur Lumer'],
-    ingredients: ['Krim keju pilihan', 'Krim susu murni', 'Kuning telur segar', 'Gula tebu pilihan'],
-    storageAdvice: 'Simpan di lemari pendingin. Bisa didiamkan 10 menit di suhu ruang sebelum disajikan agar lebih lumer.'
+    flavorProfile: ['Keju Lembut', 'Aroma Panggangan Harum', 'Rasa Gurih Pas'],
+    ingredients: ['Keju krim pilihan', 'Krim susu', 'Kuning telur segar', 'Gula pasir'],
+    storageAdvice: 'Simpan di lemari pendingin agar tekstur tetap lembut dan kokoh.'
   },
   {
     id: 'prod-5',
@@ -111,8 +111,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     price: 360000,
     formattedPrice: 'Rp 360.000',
     leadTime: 'Pesan Min. H-2',
-    shortDesc: 'Kue ulang tahun dengan bolu vanila lembut, krim susu segar, dan stroberi manis.',
-    fullDesc: 'Kue klasik favorit keluarga dengan bolu vanila lembut, lapisan krim susu yang ringan, dan potongan stroberi segar. Pilihan tepat untuk ulang tahun anak dan momen keluarga.',
+    shortDesc: 'Kue ulang tahun dengan tampilan menarik dan pilihan rasa yang bisa disesuaikan.',
+    fullDesc: 'Kue ulang tahun dengan bolu vanila lembut, lapisan krim susu yang ringan, dan potongan stroberi segar. Dibuat dengan perhatian pada rasa dan tampilan untuk momen keluarga.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCN_akFcojK1QFDACgixVBY7lbGblKtQUQk5yMTroSPQzMsARfFGp-Pf5G601fhecM54ckBlTZAVEIelSgJRUZ9JMKZz0uBWH5pde57QwPZaoVG_9tjDlwvwLtx1YsjFfzKrDCtasjOdNldRVWpTodvvV7lpUc6HLGzRgiI1Y70M-64dAyZk2Ng5XQX2sI__30WCUaG8RNV_5-yCrR8-99jv5oyTRZmMPEi7Yan7cpcB8B2KJhYGXs',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCN_akFcojK1QFDACgixVBY7lbGblKtQUQk5yMTroSPQzMsARfFGp-Pf5G601fhecM54ckBlTZAVEIelSgJRUZ9JMKZz0uBWH5pde57QwPZaoVG_9tjDlwvwLtx1YsjFfzKrDCtasjOdNldRVWpTodvvV7lpUc6HLGzRgiI1Y70M-64dAyZk2Ng5XQX2sI__30WCUaG8RNV_5-yCrR8-99jv5oyTRZmMPEi7Yan7cpcB8B2KJhYGXs'
@@ -123,8 +123,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: 'Diameter 20 cm', servings: '8 - 12 Porsi', price: 550000, formattedPrice: 'Rp 550.000' }
     ],
     flavorProfile: ['Vanila Harum', 'Stroberi Segar', 'Krim Susu Ringan'],
-    ingredients: ['Stroberi segar pilihan', 'Krim susu segar', 'Tepung terigu berkualitas', 'Telur segar', 'Gula tebu'],
-    storageAdvice: 'Simpan selalu di lemari pendingin dan segera dinikmati selagi segar.'
+    ingredients: ['Stroberi segar pilihan', 'Krim susu', 'Tepung terigu', 'Telur segar', 'Gula pasir'],
+    storageAdvice: 'Simpan di lemari pendingin dan dinikmati selagi segar.'
   },
   {
     id: 'prod-6',
@@ -136,7 +136,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp 1.250.000',
     leadTime: 'Pesan Min. H-5',
     shortDesc: 'Kue pernikahan dengan desain yang bisa disesuaikan dengan tema acara.',
-    fullDesc: 'Dirancang khusus untuk melengkapi hari bahagiamu. Menggunakan konstruksi kokoh, pilihan rasa lezat, dan dekorasi rapi yang bisa disesuaikan dengan konsep dan warna pernikahanmu.',
+    fullDesc: 'Dirancang khusus untuk melengkapi hari bahagiamu. Dibuat dengan bahan pilihan berkualitas, struktur kokoh, dan dekorasi rapi yang bisa disesuaikan dengan konsep pernikahan.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5jvewi97GfOf_FvrcJCT2_nXn2fBpiVCzPfu8zAXONLlmIYAju9q5wvv9CYbmdHWjOkqgpmnrNeLIxZsJFQnOaVTCmwXbZqsN4T2wWwbCI-duc4wjn2i18ol_6x3Z5qaYCvGy0ZJMr-J5PSuqB7yDHJgVkZkFTP9BVpW3PC5crcN5bXhkJMRPwtS0Xp-QXmkLO-yzdXfyPn5ekr8fslRhf2yj7fM3mZreSr5UzZGfbpSlqlzCPow',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuD5jvewi97GfOf_FvrcJCT2_nXn2fBpiVCzPfu8zAXONLlmIYAju9q5wvv9CYbmdHWjOkqgpmnrNeLIxZsJFQnOaVTCmwXbZqsN4T2wWwbCI-duc4wjn2i18ol_6x3Z5qaYCvGy0ZJMr-J5PSuqB7yDHJgVkZkFTP9BVpW3PC5crcN5bXhkJMRPwtS0Xp-QXmkLO-yzdXfyPn5ekr8fslRhf2yj7fM3mZreSr5UzZGfbpSlqlzCPow'
@@ -147,8 +147,8 @@ export const INITIAL_PRODUCTS: Product[] = [
       { size: '3 Tingkat (16+20+24 cm)', servings: '50 - 75 Porsi', price: 2450000, formattedPrice: 'Rp 2.450.000' }
     ],
     flavorProfile: ['Pilihan Cokelat / Vanila', 'Krim Halus', 'Dekorasi Rapi'],
-    ingredients: ['Bahan kue pilihan', 'Krim dekorasi berkualitas', 'Hiasan aman pangan', 'Alas kue kokoh'],
-    storageAdvice: 'Diantar langsung oleh tim kami dengan penanganan hati-hati sampai ke lokasi acara.'
+    ingredients: ['Tepung terigu pilihan', 'Mentega pilihan', 'Krim dekorasi', 'Telur segar', 'Gula pasir'],
+    storageAdvice: 'Diantar langsung oleh kurir toko kami dengan penanganan hati-hati sampai ke lokasi acara.'
   },
   {
     id: 'prod-7',
@@ -160,7 +160,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp 185.000',
     leadTime: 'Pesan Min. H-1',
     shortDesc: 'Brownies dengan rasa cokelat yang nikmat, cocok untuk camilan atau hadiah.',
-    fullDesc: 'Brownies panggang dengan bagian dalam yang legit dan permukaan renyah. Dibuat dengan cokelat pilihan dan mentega berkualitas untuk rasa yang mantap.',
+    fullDesc: 'Brownies panggang dengan rasa cokelat yang nikmat, bagian dalam yang legit, dan lapisan atas renyah. Dibuat dengan bahan pilihan berkualitas untuk camilan keluarga atau bingkisan.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCY1At4pzQxYXof361fgFzhWqvqmEMP7xg-fyLegtCreJ6WXnl8PP5tc5cCLC_bQ_ciFjpCkVzI5qLqiINnWSeShqpRTQAczd4JbyvEP1tJGKIszNrr6cIynwNOg8H9lu1ZB3DUEbRVQ7LBT0UXk1Vusf95boU9Xd7jU5HLAf0S2jp9oZ88AkkqqB2F8VR5-tAgbE-4dSTFI5yAso1X6ZUJT1iyQqBGe03mCKA7ynDN6zXdaC-4AH4',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuCY1At4pzQxYXof361fgFzhWqvqmEMP7xg-fyLegtCreJ6WXnl8PP5tc5cCLC_bQ_ciFjpCkVzI5qLqiINnWSeShqpRTQAczd4JbyvEP1tJGKIszNrr6cIynwNOg8H9lu1ZB3DUEbRVQ7LBT0UXk1Vusf95boU9Xd7jU5HLAf0S2jp9oZ88AkkqqB2F8VR5-tAgbE-4dSTFI5yAso1X6ZUJT1iyQqBGe03mCKA7ynDN6zXdaC-4AH4'
@@ -169,8 +169,8 @@ export const INITIAL_PRODUCTS: Product[] = [
     diameterOptions: [
       { size: 'Kotak 20x20 cm (16 Potong)', servings: '4 - 8 Orang', price: 185000, formattedPrice: 'Rp 185.000' }
     ],
-    flavorProfile: ['Cokelat Legit', 'Permukaan Renyah', 'Manis Gurih Pas'],
-    ingredients: ['Cokelat pilihan', 'Mentega berkualitas', 'Telur segar', 'Tepung terigu', 'Gula'],
+    flavorProfile: ['Cokelat Legit', 'Permukaan Renyah', 'Manis Pas'],
+    ingredients: ['Cokelat pilihan', 'Mentega pilihan', 'Telur segar', 'Tepung terigu', 'Gula pasir'],
     storageAdvice: 'Simpan di wadah tertutup pada suhu ruang hingga 5 hari atau di kulkas hingga 10 hari.'
   },
   {
@@ -183,17 +183,41 @@ export const INITIAL_PRODUCTS: Product[] = [
     formattedPrice: 'Rp 165.000',
     leadTime: 'Pesan Min. H-1',
     shortDesc: 'Pilihan kue untuk hantaran dan bingkisan bagi keluarga maupun orang tersayang.',
-    fullDesc: 'Kukis renyah dengan lelehan cokelat di dalamnya, dikemas dalam kaleng cantik. Sangat cocok untuk bingkisan hari raya, tanda terima kasih, dan oleh-oleh istimewa.',
+    fullDesc: 'Kukis renyah dengan cokelat pilihan, dikemas rapi dan cantik. Pilihan tepat untuk hantaran, tanda terima kasih, dan oleh-oleh bagi orang tersayang.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA0BR_RLROjcKJsKQeLlW3FCehomN58Ef-GYW9BTXHFql6bOPCOJA8ySFr2oCL0J1rCUDYr883PU-fpP5bRrdfgMXq-LXub6i_MUpbc_mNYA7krMC419i5f5wrGhdkzV7KJuUNQTUPdsW3gkpSpcIwSYFNRkJ8KC2qVvJSAokE24UQDRtIVRzGyN8n_kQt4V3f8bP04kqvR8eNj8PC_xPkoZaSmO3TkfUeRf0-c0fDB99fHtW2jzDE',
     galleryImages: [
       'https://lh3.googleusercontent.com/aida-public/AB6AXuA0BR_RLROjcKJsKQeLlW3FCehomN58Ef-GYW9BTXHFql6bOPCOJA8ySFr2oCL0J1rCUDYr883PU-fpP5bRrdfgMXq-LXub6i_MUpbc_mNYA7krMC419i5f5wrGhdkzV7KJuUNQTUPdsW3gkpSpcIwSYFNRkJ8KC2qVvJSAokE24UQDRtIVRzGyN8n_kQt4V3f8bP04kqvR8eNj8PC_xPkoZaSmO3TkfUeRf0-c0fDB99fHtW2jzDE'
     ],
     diameterOptions: [
-      { size: 'Kaleng Bingkisan (Isi 6 Kukis Besar)', servings: 'Isi 6 Pcs', price: 165000, formattedPrice: 'Rp 165.000' }
+      { size: 'Kaleng Bingkisan (Isi 6 Kukis)', servings: 'Isi 6 Pcs', price: 165000, formattedPrice: 'Rp 165.000' }
     ],
-    flavorProfile: ['Cokelat Nikmat', 'Renyah Bermentega', 'Aroma Wangi'],
-    ingredients: ['Cokelat pilihan', 'Mentega pilihan', 'Tepung terigu', 'Gula tebu', 'Sedikit garam'],
+    flavorProfile: ['Cokelat Pilihan', 'Renyah Gurih', 'Aroma Harum'],
+    ingredients: ['Cokelat pilihan', 'Mentega pilihan', 'Tepung terigu', 'Gula pasir', 'Garam halus'],
     storageAdvice: 'Simpan rapat di dalam wadah kedap udara agar tetap renyah.'
+  },
+  {
+    id: 'prod-9',
+    slug: 'aneka-kue-basah-tradisional',
+    name: 'Aneka Kue Basah Pilihan',
+    category: 'kue-basah',
+    categoryLabel: 'Kue Basah',
+    price: 150000,
+    formattedPrice: 'Rp 150.000',
+    leadTime: 'Pesan Min. H-1',
+    shortDesc: 'Aneka kue basah untuk teman minum teh, acara keluarga, dan berbagai kegiatan.',
+    fullDesc: 'Pilihan aneka kue basah tradisional favorit seperti lemper ayam, pastel, pie buah, dan risoles. Dibuat berdasarkan pesanan dengan bahan pilihan berkualitas untuk sajian segar saat acara.',
+    image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCN_akFcojK1QFDACgixVBY7lbGblKtQUQk5yMTroSPQzMsARfFGp-Pf5G601fhecM54ckBlTZAVEIelSgJRUZ9JMKZz0uBWH5pde57QwPZaoVG_9tjDlwvwLtx1YsjFfzKrDCtasjOdNldRVWpTodvvV7lpUc6HLGzRgiI1Y70M-64dAyZk2Ng5XQX2sI__30WCUaG8RNV_5-yCrR8-99jv5oyTRZmMPEi7Yan7cpcB8B2KJhYGXs',
+    galleryImages: [
+      'https://lh3.googleusercontent.com/aida-public/AB6AXuCN_akFcojK1QFDACgixVBY7lbGblKtQUQk5yMTroSPQzMsARfFGp-Pf5G601fhecM54ckBlTZAVEIelSgJRUZ9JMKZz0uBWH5pde57QwPZaoVG_9tjDlwvwLtx1YsjFfzKrDCtasjOdNldRVWpTodvvV7lpUc6HLGzRgiI1Y70M-64dAyZk2Ng5XQX2sI__30WCUaG8RNV_5-yCrR8-99jv5oyTRZmMPEi7Yan7cpcB8B2KJhYGXs'
+    ],
+    badge: 'Favorit',
+    diameterOptions: [
+      { size: 'Paket Tampah Mini (Isi 20 Pcs)', servings: '4 - 6 Orang', price: 150000, formattedPrice: 'Rp 150.000' },
+      { size: 'Paket Tampah Sedang (Isi 35 Pcs)', servings: '8 - 12 Orang', price: 250000, formattedPrice: 'Rp 250.000' }
+    ],
+    flavorProfile: ['Rasa Gurih & Manis', 'Tekstur Lembut', 'Sajian Segar'],
+    ingredients: ['Beras ketan pilihan', 'Daging ayam segar', 'Santan kelapa murni', 'Tepung terigu', 'Bumbu rempah alami'],
+    storageAdvice: 'Sangat baik dinikmati pada hari yang sama. Simpan di tempat sejuk.'
   }
 ];
 
@@ -298,7 +322,7 @@ export const INITIAL_ORDERS: Order[] = [
       {
         id: 'item-3',
         productId: 'prod-3',
-        productName: 'Chiffon Cake Earl Grey & Berry',
+        productName: 'Chiffon Cake Earl Grey & Buah',
         productImage: INITIAL_PRODUCTS[2].image,
         size: 'Diameter 18 cm (6-8 Porsi)',
         unitPrice: 295000,
@@ -432,7 +456,7 @@ export const INITIAL_OVEN_BATCHES: OvenBatch[] = [
     temperature: '160°C - 165°C',
     orderCount: 6,
     status: 'completed',
-    description: 'Bolu vanila dan sponge cake tart',
+    description: 'Bolu vanila dan kue tart lembut',
     orders: [
       { orderId: '#SB-2026-8938', cake: 'Strawberry Shortcake Klasik', size: 'Diameter 18 cm', station: 'Oven 1' },
       { orderId: '#SB-2026-8935', cake: 'Cheesecake Panggang Lembut', size: 'Diameter 18 cm', station: 'Oven 2' },
@@ -448,7 +472,7 @@ export const INITIAL_OVEN_BATCHES: OvenBatch[] = [
     status: 'in_progress',
     description: 'Chiffon cake dan bolu lembut',
     orders: [
-      { orderId: '#SB-2026-8941', cake: 'Chiffon Cake Earl Grey & Berry', size: 'Diameter 18 cm', station: 'Oven 3' },
+      { orderId: '#SB-2026-8941', cake: 'Chiffon Cake Earl Grey & Buah', size: 'Diameter 18 cm', station: 'Oven 3' },
       { orderId: '#SB-2026-8939', cake: 'Cheesecake Panggang Lembut', size: 'Diameter 16 cm', station: 'Oven 4' }
     ]
   },
@@ -489,7 +513,7 @@ export const INITIAL_PAYMENT_VERIFICATIONS: PaymentVerification[] = [
     customerName: 'Rendy Pratama',
     phone: '0817-6543-2109',
     paymentMethod: 'QRIS',
-    productName: 'Chiffon Cake Earl Grey & Berry (Diameter 18 cm)',
+    productName: 'Chiffon Cake Earl Grey & Buah (Diameter 18 cm)',
     cakeDetails: 'Acara: 17 Okt 2026 · Ambil Sendiri di Toko',
     eventDate: '17 Okt 2026',
     nominal: 147500,

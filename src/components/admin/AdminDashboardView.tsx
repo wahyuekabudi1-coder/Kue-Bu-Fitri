@@ -14,13 +14,13 @@ export const AdminDashboardView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-[#C62828] bg-[#FFF5E9] px-2.5 py-1 rounded-md border border-[#EADFD9]">
-            Kitchen Atelier Operations
+            Operasional Sweet Bakery
           </span>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3B2925] mt-1">
-            Ringkasan Operasional &amp; KPI
+            Dashboard
           </h1>
           <p className="text-xs text-[#705954]">
-            Kamis, 15 Oktober 2026 · Dapur Atelier Senopati No. 42
+            Kamis, 15 Oktober 2026 · Dapur Sweet Bakery, Jl. Senopati No. 42
           </p>
         </div>
 
@@ -30,14 +30,14 @@ export const AdminDashboardView: React.FC = () => {
             className="inline-flex items-center gap-2 bg-white border border-[#EADFD9] hover:bg-[#FFF5E9] text-[#3B2925] text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">calendar_month</span>
-            <span>Jadwal Oven</span>
+            <span>Jadwal Produksi</span>
           </button>
           <button
             onClick={() => setCurrentView('verifikasi-pembayaran')}
             className="inline-flex items-center gap-2 bg-[#C62828] hover:bg-[#9B1B1B] text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors cursor-pointer shadow-xs"
           >
             <span className="material-symbols-outlined text-[18px]">payments</span>
-            <span>Verifikasi DP ({pendingPVs.length})</span>
+            <span>Verifikasi Pembayaran ({pendingPVs.length})</span>
           </button>
         </div>
       </div>
@@ -78,14 +78,14 @@ export const AdminDashboardView: React.FC = () => {
         {/* KPI 3 */}
         <div className="bg-white p-5 rounded-2xl border border-[#EADFD9] space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#705954]">Estimasi Omzet Pre-Order</span>
+            <span className="text-xs font-semibold text-[#705954]">Total Nilai Pesanan</span>
             <span className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <span className="material-symbols-outlined text-[18px]">payments</span>
             </span>
           </div>
-          <div className="font-serif text-3xl font-bold text-[#3B2925]">Rp 12,4Jt</div>
+          <div className="font-serif text-3xl font-bold text-[#3B2925]">Rp 12,4 Jt</div>
           <div className="text-[11px] text-[#2E7D32] flex items-center gap-1 font-semibold">
-            <span>DP Terkumpul: Rp 6.820.000</span>
+            <span>DP Diterima: Rp 6.820.000</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export const AdminDashboardView: React.FC = () => {
           </div>
           <div className="font-serif text-3xl font-bold text-[#C62828]">{pendingPVs.length}</div>
           <div className="text-[11px] text-[#705954]">
-            Perlu persetujuan kasir dapur
+            Perlu konfirmasi admin toko
           </div>
         </div>
 
@@ -157,13 +157,13 @@ export const AdminDashboardView: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="font-serif text-base font-bold text-[#3B2925] flex items-center gap-2">
               <span className="material-symbols-outlined text-[#ED6C02] text-[20px]">local_fire_department</span>
-              <span>Jadwal Oven Hari Ini</span>
+              <span>Jadwal Produksi Hari Ini</span>
             </h3>
             <button
               onClick={() => setCurrentView('kalender-produksi-oven')}
               className="text-xs font-semibold text-[#C62828] hover:underline cursor-pointer"
             >
-              Kalender Lengkap
+              Jadwal Lengkap
             </button>
           </div>
 
@@ -181,7 +181,7 @@ export const AdminDashboardView: React.FC = () => {
                           : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    {batch.status === 'completed' ? 'Selesai' : batch.status === 'in_progress' ? 'Sedang Baking' : 'Terjadwal'}
+                    {batch.status === 'completed' ? 'Selesai' : batch.status === 'in_progress' ? 'Sedang Dipanggang' : 'Terjadwal'}
                   </span>
                 </div>
                 <div className="text-xs text-[#705954]">{batch.description}</div>
@@ -217,7 +217,7 @@ export const AdminDashboardView: React.FC = () => {
                 <th className="pb-3 font-semibold">Pelanggan</th>
                 <th className="pb-3 font-semibold">Produk &amp; Ukuran</th>
                 <th className="pb-3 font-semibold">Jadwal Kirim</th>
-                <th className="pb-3 font-semibold">Status Finansial</th>
+                <th className="pb-3 font-semibold">Status Pembayaran</th>
                 <th className="pb-3 font-semibold text-right">Aksi</th>
               </tr>
             </thead>

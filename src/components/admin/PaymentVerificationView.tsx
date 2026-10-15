@@ -29,25 +29,25 @@ export const PaymentVerificationView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-[#C62828] bg-[#FFF5E9] px-2.5 py-1 rounded-md border border-[#EADFD9]">
-            Financial Audit
+            Verifikasi Pembayaran
           </span>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3B2925] mt-1">
-            Verifikasi Pembayaran Uang Muka (DP)
+            Pembayaran
           </h1>
           <p className="text-xs text-[#705954]">
-            {pendingList.length} bukti pembayaran baru memerlukan persetujuan sebelum slot oven dikunci.
+            {pendingList.length} bukti transfer memerlukan konfirmasi admin toko Sweet Bakery.
           </p>
         </div>
 
         <div className="text-xs bg-[#FFF5E9] border border-[#EADFD9] px-4 py-2 rounded-xl text-[#3B2925] font-medium">
-          Rekening Aktif: <strong>BCA &amp; QRIS Senopati Atelier</strong>
+          Rekening Toko: <strong>BCA &amp; QRIS Sweet Bakery</strong>
         </div>
       </div>
 
       {/* Pending Verifications */}
       <div className="space-y-4">
         <h2 className="font-serif text-base font-bold text-[#3B2925]">
-          Menunggu Konfirmasi Kasir Dapur ({pendingList.length})
+          Menunggu Konfirmasi ({pendingList.length})
         </h2>
 
         {pendingList.length === 0 ? (
@@ -112,7 +112,7 @@ export const PaymentVerificationView: React.FC = () => {
                       onClick={() => handleApprove(pv)}
                       className="px-4 py-1.5 rounded-xl bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-semibold transition-colors cursor-pointer shadow-xs"
                     >
-                      Setujui &amp; Kunci Oven
+                      Setujui Pembayaran
                     </button>
                   </div>
                 </div>
@@ -137,29 +137,45 @@ export const PaymentVerificationView: React.FC = () => {
                   <th className="py-3 px-4 font-semibold">Pelanggan</th>
                   <th className="py-3 px-4 font-semibold">Nominal</th>
                   <th className="py-3 px-4 font-semibold">Metode</th>
-                  <th className="py-3 px-4 font-semibold">Status</th>
+                  <th className="py-3 px-4 font-semibold">Status &amp; Verifikator</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#EADFD9]">
-                {processedList.map(pv => (
-                  <tr key={pv.id}>
-                    <td className="py-3 px-4 font-bold text-[#3B2925]">{pv.orderId}</td>
-                    <td className="py-3 px-4">{pv.customerName}</td>
-                    <td className="py-3 px-4 font-semibold text-[#3B2925]">{pv.formattedNominal}</td>
-                    <td className="py-3 px-4 text-[#705954]">{pv.paymentMethod}</td>
-                    <td className="py-3 px-4">
-                      {pv.status === 'approved' ? (
-                        <span className="text-green-700 font-bold bg-green-50 px-2.5 py-0.5 rounded-full text-[10px]">
-                          ✓ Terverifikasi &amp; Slot Terkunci
-                        </span>
-                      ) : (
-                        <span className="text-red-700 font-bold bg-red-50 px-2.5 py-0.5 rounded-full text-[10px]">
-                          ✕ Ditolak: {pv.rejectionReason}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {processedList.map(pv => {
+                  const anyPv = pv as any;
+                  return (
+                    <tr key={pv.id}>
+                      <td className="py-3 px-4 font-bold text-[#3B2925]">{pv.orderId}</td>
+                      <td className="py-3 px-4">{pv.customerName}</td>
+                      <td className="py-3 px-4 font-semibold text-[#3B2925]">{pv.formattedNominal}</td>
+                      <td className="py-3 px-4 text-[#705954]">{pv.paymentMethod}</td>
+                      <td className="py-3 px-4">
+                        {pv.status === 'approved' ? (
+                          <div className="space-y-0.5">
+                            <span className="text-green-700 font-bold bg-green-50 px-2.5 py-0.5 rounded-full text-[10px] inline-block">
+                              ✓ Pembayaran telah diverifikasi
+                            </span>
+                            <div className="text-[10px] text-[#705954]">
+                              Oleh: <strong className="text-[#3B2925]">{anyPv.verifiedBy || 'Adit (Admin Toko)'}</strong> · {anyPv.verifiedAt || pv.timestamp}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-0.5">
+                            <span className="text-red-700 font-bold bg-red-50 px-2.5 py-0.5 rounded-full text-[10px] inline-block">
+                              ✕ Ditolak
+                            </span>
+                            <div className="text-[10px] text-red-600 font-medium">
+                              Alasan: {pv.rejectionReason}
+                            </div>
+                            <div className="text-[9px] text-[#705954]">
+                              Oleh: {anyPv.rejectedBy || 'Admin Toko'} · {anyPv.rejectedAt || pv.timestamp}
+                            </div>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -172,7 +188,7 @@ export const PaymentVerificationView: React.FC = () => {
           <div className="bg-white rounded-3xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-[#EADFD9]">
             <div className="flex items-center justify-between border-b border-[#EADFD9] pb-3">
               <div>
-                <h3 className="font-serif text-base font-bold text-[#3B2925]">Bukti Struk Transfer</h3>
+                <h3 className="font-serif text-base font-bold text-[#3B2925]">Bukti Transfer</h3>
                 <span className="text-xs text-[#705954]">{selectedProof.orderId} · {selectedProof.customerName}</span>
               </div>
               <button
@@ -183,18 +199,25 @@ export const PaymentVerificationView: React.FC = () => {
               </button>
             </div>
 
-            <div className="aspect-[3/4] bg-[#FAF7F4] rounded-2xl overflow-hidden border border-[#EADFD9]">
+            <div className="aspect-[3/4] bg-[#FAF7F4] rounded-2xl overflow-hidden border border-[#EADFD9] flex items-center justify-center">
               <img
-                src={selectedProof.slipUrl}
+                src={
+                  selectedProof.slipUrl.startsWith('/api/')
+                    ? `${selectedProof.slipUrl}?token=${sessionStorage.getItem('sweet_bakery_admin_jwt') || ''}`
+                    : selectedProof.slipUrl
+                }
                 alt="Bukti Transfer"
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
               />
             </div>
 
             <div className="text-xs bg-[#FFF5E9] p-3 rounded-xl border border-[#EADFD9] text-[#705954]">
               <div><strong>Nominal:</strong> {selectedProof.formattedNominal}</div>
               <div><strong>Waktu:</strong> {selectedProof.timestamp}</div>
-              <div><strong>Bank Tujuan:</strong> {selectedProof.paymentMethod}</div>
+              <div><strong>Metode:</strong> {selectedProof.paymentMethod}</div>
             </div>
 
             <button
@@ -204,7 +227,7 @@ export const PaymentVerificationView: React.FC = () => {
               }}
               className="w-full bg-[#2E7D32] hover:bg-[#1B5E20] text-white text-xs font-semibold py-3 rounded-full transition-colors cursor-pointer"
             >
-              Setujui DP &amp; Kunci Oven Sekarang
+              Setujui Pembayaran Sekarang
             </button>
           </div>
         </div>

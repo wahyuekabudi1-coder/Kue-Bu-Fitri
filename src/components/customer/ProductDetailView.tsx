@@ -9,7 +9,7 @@ export const ProductDetailView: React.FC = () => {
   const [selectedImage, setSelectedImage] = useState<string>(selectedProduct.image);
   const [quantity, setQuantity] = useState<number>(1);
   const [customMessage, setCustomMessage] = useState<string>('Selamat Ulang Tahun Sarah! ✨');
-  const [candleOption, setCandleOption] = useState<string>('Lilin Spiral Gold (2 batang)');
+  const [candleOption, setCandleOption] = useState<string>('Lilin Spiral Emas (2 batang)');
   const [greetingCard, setGreetingCard] = useState<string>('Semoga panjang umur, sehat selalu, dan bahagia bersama keluarga.');
 
   const currentDiameter = selectedProduct.diameterOptions[selectedSizeIndex] || selectedProduct.diameterOptions[0];
@@ -121,7 +121,7 @@ export const ProductDetailView: React.FC = () => {
             <div className="text-2xl sm:text-3xl font-bold text-[#C62828] pt-2">
               Rp {totalPrice.toLocaleString('id-ID')}
               <span className="text-xs font-normal text-[#705954] ml-2">
-                (Ketentuan DP 50%: Rp {Math.round(totalPrice * 0.5).toLocaleString('id-ID')})
+                (Ketentuan DP 50%: Rp {Math.ceil(totalPrice * 0.5).toLocaleString('id-ID')})
               </span>
             </div>
           </div>
@@ -180,7 +180,7 @@ export const ProductDetailView: React.FC = () => {
               onChange={e => setCandleOption(e.target.value)}
               className="w-full bg-white border border-[#EADFD9] rounded-xl px-4 py-3 text-sm text-[#3B2925] focus:outline-hidden focus:border-[#C62828] cursor-pointer"
             >
-              <option value="Lilin Spiral Gold (2 batang)">Lilin Spiral Emas (2 batang) - Termasuk</option>
+              <option value="Lilin Spiral Emas (2 batang)">Lilin Spiral Emas (2 batang) - Termasuk</option>
               <option value="Lilin Batang Standar (5 batang)">Lilin Batang Klasik (5 batang) - Termasuk</option>
               <option value="Lilin Angka">Lilin Angka (Tulis angka pada catatan)</option>
               <option value="Tanpa Lilin">Tanpa Lilin</option>

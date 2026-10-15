@@ -34,8 +34,9 @@ export const CatalogView: React.FC = () => {
     { id: 'all', label: 'Semua Kue' },
     { id: 'birthday', label: 'Kue Ulang Tahun' },
     { id: 'wedding', label: 'Kue Pernikahan' },
-    { id: 'tart', label: 'Kue Tart' },
+    { id: 'kue-basah', label: 'Kue Basah' },
     { id: 'brownies', label: 'Brownies' },
+    { id: 'tart', label: 'Kue Tart' },
     { id: 'hampers', label: 'Hampers dan Hantaran' }
   ];
 
@@ -184,7 +185,7 @@ export const CatalogView: React.FC = () => {
                     }}
                     className="inline-flex items-center justify-center bg-[#C62828] hover:bg-[#9B1B1B] text-white text-xs font-semibold px-3.5 py-1.5 rounded-full transition-all cursor-pointer shadow-xs"
                   >
-                    Pesan
+                    Pesan Sekarang
                   </button>
                 </div>
               </div>

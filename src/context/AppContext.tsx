@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
   AppView, 
   Product, 
@@ -16,6 +16,7 @@ import {
   INITIAL_OVEN_SLOTS, 
   INITIAL_OVEN_BATCHES 
 } from '../data/initialData';
+import { api, getAdminToken } from '../services/api';
 
 interface AppContextType {
   currentView: AppView;
@@ -43,22 +44,29 @@ interface AppContextType {
     timeSlot: string;
     notes?: string;
     paymentOption: 'dp_50' | 'full';
-  }) => Order;
-  confirmPaymentProof: (orderId: string, method: string, proofUrl?: string) => void;
-  verifyPayment: (pvId: string) => void;
-  rejectPayment: (pvId: string, reason: string) => void;
-  updateOrderStatus: (orderId: string, newStatus: OrderProductionStatus) => void;
-  findOrder: (query: string) => Order | undefined;
+  }) => Promise<Order>;
+  confirmPaymentProof: (orderId: string, method: string, proofFileOrUrl?: File | Blob | string) => Promise<void>;
+  verifyPayment: (pvId: string) => Promise<void>;
+  rejectPayment: (pvId: string, reason: string) => Promise<void>;
+  updateOrderStatus: (orderId: string, newStatus: OrderProductionStatus) => Promise<void>;
+  updateBatchStatus: (batchId: string, status: string) => Promise<void>;
+  findOrder: (query: string) => Promise<Order | undefined>;
+  isAdminAuthenticated: boolean;
+  currentAdminUser: any;
+  loginAdmin: (email: string, password: string) => Promise<boolean>;
+  logoutAdmin: () => void;
+  refreshData: () => Promise<void>;
+  isLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentView, setCurrentView] = useState<AppView>('beranda');
-  const [products] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [selectedProduct, setSelectedProduct] = useState<Product>(INITIAL_PRODUCTS[0]);
-  
-  // Default cart item
+
+  // Cart items
   const [cartItems, setCartItems] = useState<PreOrderItem[]>([
     {
       id: 'cart-1',
@@ -69,18 +77,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       unitPrice: 385000,
       quantity: 1,
       customMessage: 'Selamat Ulang Tahun Sarah! ✨',
-      candleOption: 'Lilin Spiral Gold (2 pcs)',
+      candleOption: 'Lilin Spiral Emas (2 batang)',
       greetingCard: 'Semoga panjang umur, sehat selalu, dan bahagia bersama keluarga.',
       totalPrice: 385000
     }
   ]);
 
+  // Backend state
   const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
-  const [activeOrder, setActiveOrder] = useState<Order | null>(INITIAL_ORDERS[0]);
   const [paymentVerifications, setPaymentVerifications] = useState<PaymentVerification[]>(INITIAL_PAYMENT_VERIFICATIONS);
   const [ovenSlots, setOvenSlots] = useState<OvenSlotDay[]>(INITIAL_OVEN_SLOTS);
   const [ovenBatches, setOvenBatches] = useState<OvenBatch[]>(INITIAL_OVEN_BATCHES);
+  const [activeOrder, setActiveOrder] = useState<Order | null>(INITIAL_ORDERS[0] || null);
 
+  // Admin Auth state
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(false);
+  const [currentAdminUser, setCurrentAdminUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Fetch public data & verify admin auth on mount
+  const refreshData = useCallback(async () => {
+    try {
+      // 1. Fetch public products and slots
+      const [fetchedProducts, fetchedSlots] = await Promise.all([
+        api.getProducts().catch(() => INITIAL_PRODUCTS),
+        api.getOvenSlots().catch(() => INITIAL_OVEN_SLOTS)
+      ]);
+      setProducts(fetchedProducts);
+      setOvenSlots(fetchedSlots);
+
+      // 2. Check admin auth
+      const token = getAdminToken();
+      if (token) {
+        const user = await api.getAdminMe();
+        if (user) {
+          setIsAdminAuthenticated(true);
+          setCurrentAdminUser(user);
+
+          // Fetch protected admin data
+          const [adminOrders, pvs, batches] = await Promise.all([
+            api.getAdminOrders().catch(() => orders),
+            api.getPaymentVerifications().catch(() => paymentVerifications),
+            api.getOvenBatches().catch(() => ovenBatches)
+          ]);
+          setOrders(adminOrders);
+          setPaymentVerifications(pvs);
+          setOvenBatches(batches);
+        } else {
+          setIsAdminAuthenticated(false);
+          setCurrentAdminUser(null);
+        }
+      }
+    } catch (err) {
+      console.error('Error refreshing backend data:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshData();
+  }, [refreshData]);
+
+  // Handle browser back/forward history
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname.replace('/', '');
@@ -119,7 +176,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setCartItems([]);
   };
 
-  const submitPreOrder = (formData: {
+  // Submit Pre-Order to Backend Database with atomic slot reservation
+  const submitPreOrder = async (formData: {
     customerName: string;
     customerPhone: string;
     customerEmail: string;
@@ -129,169 +187,167 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     timeSlot: string;
     notes?: string;
     paymentOption: 'dp_50' | 'full';
-  }): Order => {
-    const subtotal = cartItems.reduce((acc, curr) => acc + curr.totalPrice, 0);
-    const deliveryFee = formData.deliveryMethod === 'courier' ? 60000 : 0;
-    const total = subtotal + deliveryFee;
-    const dpAmount = formData.paymentOption === 'dp_50' ? Math.round(total * 0.5) : total;
-    const remainingAmount = total - dpAmount;
+  }): Promise<Order> => {
+    setIsLoading(true);
+    try {
+      const createdOrder = await api.createOrder({
+        ...formData,
+        items: cartItems
+      });
 
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    const newOrderId = `#SB-2026-${randomSuffix}`;
+      setOrders(prev => [createdOrder, ...prev]);
+      setActiveOrder(createdOrder);
 
-    const newOrder: Order = {
-      id: newOrderId,
-      customerName: formData.customerName,
-      customerPhone: formData.customerPhone,
-      customerEmail: formData.customerEmail,
-      deliveryMethod: formData.deliveryMethod,
-      deliveryAddress: formData.deliveryAddress,
-      deliveryDate: formData.deliveryDate,
-      timeSlot: formData.timeSlot,
-      notes: formData.notes,
-      items: [...cartItems],
-      subtotal,
-      deliveryFee,
-      total,
-      paymentOption: formData.paymentOption,
-      dpAmount,
-      remainingAmount,
-      paymentStatus: 'pending_dp',
-      orderStatus: 'pending_verification',
-      createdAt: 'Hari ini, baru saja',
-      timeline: [
-        { title: 'Pesanan Diterima', desc: 'Pesanan berhasil dikirim dan sedang menunggu konfirmasi.', time: 'Baru saja', done: true, current: true },
-        { title: 'Menunggu Pembayaran DP', desc: 'Silakan transfer uang muka untuk mengunci jadwal pesananmu.', time: 'Menunggu transfer', done: false },
-        { title: 'Jadwal Pembuatan Masuk Dapur', desc: 'Bahan disiapkan dan kue dijadwalkan di dapur.', time: `Estimasi H-1 (${formData.deliveryDate})`, done: false },
-        { title: 'Dekorasi & Pengecekan Kue', desc: 'Kue dihias dan dicek kerapiannya sebelum siap dikirim.', time: formData.deliveryDate, done: false },
-        { title: 'Pengantaran Kue', desc: 'Kue diantar dengan aman ke alamat tujuan.', time: `${formData.deliveryDate}, ${formData.timeSlot}`, done: false }
-      ]
-    };
+      // Re-fetch oven slots to reflect updated capacity
+      const updatedSlots = await api.getOvenSlots().catch(() => ovenSlots);
+      setOvenSlots(updatedSlots);
 
-    setOrders(prev => [newOrder, ...prev]);
-    setActiveOrder(newOrder);
-
-    // Update daily slots
-    setOvenSlots(prev => prev.map(slot => {
-      if (slot.dateStr.includes(formData.deliveryDate.slice(0, 2))) {
-        const nextBooked = Math.min(slot.totalSlots, slot.bookedSlots + 1);
-        return {
-          ...slot,
-          bookedSlots: nextBooked,
-          status: nextBooked >= slot.totalSlots ? 'full' : nextBooked >= slot.totalSlots - 2 ? 'low' : 'available'
-        };
-      }
-      return slot;
-    }));
-
-    return newOrder;
-  };
-
-  const confirmPaymentProof = (orderId: string, method: string, proofUrl?: string) => {
-    const defaultProof = proofUrl || 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&auto=format&fit=crop&q=80';
-    
-    setOrders(prev => prev.map(order => {
-      if (order.id === orderId) {
-        const updatedTimeline = order.timeline.map((evt, idx) => {
-          if (idx === 1) return { ...evt, done: true, current: true, title: 'Bukti Pembayaran Sedang Diperiksa', time: 'Baru saja diunggah' };
-          return evt;
-        });
-        return {
-          ...order,
-          paymentMethod: method,
-          transferProofUrl: defaultProof,
-          timeline: updatedTimeline
-        };
-      }
-      return order;
-    }));
-
-    if (activeOrder && activeOrder.id === orderId) {
-      setActiveOrder(prev => prev ? {
-        ...prev,
-        paymentMethod: method,
-        transferProofUrl: defaultProof
-      } : null);
-    }
-
-    const targetOrder = orders.find(o => o.id === orderId) || activeOrder;
-    if (targetOrder) {
-      const newPV: PaymentVerification = {
-        id: `pv-${Date.now()}`,
-        orderId: targetOrder.id,
-        customerName: targetOrder.customerName,
-        phone: targetOrder.customerPhone,
-        paymentMethod: method,
-        productName: targetOrder.items[0]?.productName || 'Kue Pilihan',
-        cakeDetails: `Acara: ${targetOrder.deliveryDate} · ${targetOrder.deliveryMethod === 'courier' ? 'Diantar Kurir Toko' : 'Ambil Sendiri di Toko'}`,
-        eventDate: targetOrder.deliveryDate,
-        nominal: targetOrder.dpAmount,
-        formattedNominal: `Rp ${targetOrder.dpAmount.toLocaleString('id-ID')}`,
-        timestamp: 'Hari ini, baru saja',
-        slipUrl: defaultProof,
-        status: 'pending'
-      };
-      setPaymentVerifications(prev => [newPV, ...prev]);
+      return createdOrder;
+    } catch (err: any) {
+      throw new Error(err.message || 'Gagal mengirim pesanan ke database backend.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const verifyPayment = (pvId: string) => {
-    const pv = paymentVerifications.find(p => p.id === pvId);
-    if (!pv) return;
+  // Upload payment proof to private backend storage
+  const confirmPaymentProof = async (
+    orderId: string, 
+    method: string, 
+    proofFileOrUrl?: File | Blob | string
+  ): Promise<void> => {
+    setIsLoading(true);
+    try {
+      let fileToUpload: File | Blob;
 
-    setPaymentVerifications(prev => prev.map(p => p.id === pvId ? { ...p, status: 'approved' } : p));
-
-    setOrders(prev => prev.map(o => {
-      if (o.id === pv.orderId) {
-        const updatedTimeline = o.timeline.map((evt, idx) => {
-          if (idx === 1) return { ...evt, done: true, current: false, title: 'Pembayaran Telah Dikonfirmasi' };
-          if (idx === 2) return { ...evt, current: true };
-          return evt;
-        });
-        return {
-          ...o,
-          paymentStatus: 'dp_paid',
-          orderStatus: 'scheduled_oven',
-          timeline: updatedTimeline
-        };
+      if (proofFileOrUrl instanceof File || proofFileOrUrl instanceof Blob) {
+        fileToUpload = proofFileOrUrl;
+      } else {
+        // Create sample placeholder blob if called with URL or empty
+        const sampleText = `Sweet Bakery Proof - ${orderId} - ${method} - ${new Date().toISOString()}`;
+        fileToUpload = new Blob([sampleText], { type: 'image/jpeg' });
       }
-      return o;
-    }));
 
-    if (activeOrder && activeOrder.id === pv.orderId) {
-      setActiveOrder(prev => prev ? {
-        ...prev,
-        paymentStatus: 'dp_paid',
-        orderStatus: 'scheduled_oven'
-      } : null);
+      const result = await api.uploadPaymentProof(orderId, method, fileToUpload);
+
+      setOrders(prev => prev.map(o => o.id === orderId ? result.order : o));
+      setPaymentVerifications(prev => [result.pv, ...prev]);
+      if (activeOrder && activeOrder.id === orderId) {
+        setActiveOrder(result.order);
+      }
+    } catch (err: any) {
+      console.error('Gagal mengunggah bukti pembayaran:', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const rejectPayment = (pvId: string, reason: string) => {
-    setPaymentVerifications(prev => prev.map(p => p.id === pvId ? { ...p, status: 'rejected', rejectionReason: reason } : p));
-  };
-
-  const updateOrderStatus = (orderId: string, newStatus: OrderProductionStatus) => {
-    setOrders(prev => prev.map(o => {
-      if (o.id === orderId) {
-        return { ...o, orderStatus: newStatus };
+  // Verify Payment by Admin
+  const verifyPayment = async (pvId: string): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const result = await api.verifyPayment(pvId);
+      setPaymentVerifications(prev => prev.map(p => p.id === pvId ? result.pv : p));
+      setOrders(prev => prev.map(o => o.id === result.order.id ? result.order : o));
+      if (activeOrder && activeOrder.id === result.order.id) {
+        setActiveOrder(result.order);
       }
-      return o;
-    }));
-
-    if (activeOrder && activeOrder.id === orderId) {
-      setActiveOrder(prev => prev ? { ...prev, orderStatus: newStatus } : null);
+    } catch (err: any) {
+      console.error('Gagal verifikasi pembayaran:', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const findOrder = (query: string): Order | undefined => {
-    const q = query.trim().toLowerCase();
+  // Reject Payment by Admin
+  const rejectPayment = async (pvId: string, reason: string): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const result = await api.rejectPayment(pvId, reason);
+      setPaymentVerifications(prev => prev.map(p => p.id === pvId ? result.pv : p));
+      setOrders(prev => prev.map(o => o.id === result.order.id ? result.order : o));
+      if (activeOrder && activeOrder.id === result.order.id) {
+        setActiveOrder(result.order);
+      }
+    } catch (err: any) {
+      console.error('Gagal menolak pembayaran:', err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Update Order Production Status by Admin
+  const updateOrderStatus = async (orderId: string, newStatus: OrderProductionStatus): Promise<void> => {
+    try {
+      const updated = await api.updateOrderStatus(orderId, newStatus);
+      setOrders(prev => prev.map(o => o.id === orderId ? updated : o));
+      if (activeOrder && activeOrder.id === orderId) {
+        setActiveOrder(updated);
+      }
+    } catch (err) {
+      console.error('Gagal update status pesanan:', err);
+    }
+  };
+
+  // Update Batch Status by Admin
+  const updateBatchStatus = async (batchId: string, status: string): Promise<void> => {
+    try {
+      const updated = await api.updateBatchStatus(batchId, status);
+      setOvenBatches(prev => prev.map(b => b.id === batchId ? updated : b));
+    } catch (err) {
+      console.error('Gagal update status batch oven:', err);
+    }
+  };
+
+  // Find order (searches backend database)
+  const findOrder = async (query: string): Promise<Order | undefined> => {
+    const q = query.trim();
     if (!q) return undefined;
-    return orders.find(o => 
-      o.id.toLowerCase().includes(q) || 
-      o.customerName.toLowerCase().includes(q) || 
-      o.customerPhone.includes(q)
-    );
+    try {
+      const found = await api.trackOrder(q);
+      if (found) {
+        setActiveOrder(found);
+        return found;
+      }
+    } catch {
+      // Fallback local memory search
+      const local = orders.find(o => 
+        o.id.toLowerCase().includes(q.toLowerCase()) || 
+        o.customerPhone.replace(/[^0-9]/g, '').includes(q.replace(/[^0-9]/g, ''))
+      );
+      if (local) {
+        setActiveOrder(local);
+        return local;
+      }
+    }
+    return undefined;
+  };
+
+  // Admin login via real server-side authentication
+  const loginAdmin = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
+    try {
+      const res = await api.loginAdmin(email, password);
+      setIsAdminAuthenticated(true);
+      setCurrentAdminUser(res.user);
+      await refreshData();
+      return true;
+    } catch (err: any) {
+      console.error('Login gagal:', err);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logoutAdmin = (): void => {
+    api.logoutAdmin();
+    setIsAdminAuthenticated(false);
+    setCurrentAdminUser(null);
+    setCurrentView('beranda');
   };
 
   return (
@@ -317,7 +373,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         verifyPayment,
         rejectPayment,
         updateOrderStatus,
-        findOrder
+        updateBatchStatus,
+        findOrder: findOrder as any,
+        isAdminAuthenticated,
+        currentAdminUser,
+        loginAdmin,
+        logoutAdmin,
+        refreshData,
+        isLoading
       }}
     >
       {children}

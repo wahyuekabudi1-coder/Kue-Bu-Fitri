@@ -42,13 +42,13 @@ export const OrderManagementView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-[#C62828] bg-[#FFF5E9] px-2.5 py-1 rounded-md border border-[#EADFD9]">
-            Order Operations
+            Manajemen Toko
           </span>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3B2925] mt-1">
-            Manajemen Pesanan Pre-Order
+            Pesanan
           </h1>
           <p className="text-xs text-[#705954]">
-            Total {orders.length} pesanan tercatat dalam siklus pre-order aktif.
+            Total {orders.length} pesanan tercatat dalam sistem toko Sweet Bakery.
           </p>
         </div>
 
@@ -94,7 +94,7 @@ export const OrderManagementView: React.FC = () => {
                 <th className="py-3 px-4 font-semibold">Pelanggan &amp; Kontak</th>
                 <th className="py-3 px-4 font-semibold">Produk &amp; Ukuran</th>
                 <th className="py-3 px-4 font-semibold">Jadwal Kirim</th>
-                <th className="py-3 px-4 font-semibold">Status Finansial</th>
+                <th className="py-3 px-4 font-semibold">Status Pembayaran</th>
                 <th className="py-3 px-4 font-semibold">Status Dapur</th>
                 <th className="py-3 px-4 font-semibold text-right">Aksi</th>
               </tr>
@@ -114,7 +114,7 @@ export const OrderManagementView: React.FC = () => {
                     <div className="text-[11px] text-[#705954]">{ord.items[0]?.size}</div>
                     {ord.items[0]?.customMessage && (
                       <div className="text-[10px] text-[#C62828] italic">
-                        Plakat: &ldquo;{ord.items[0].customMessage}&rdquo;
+                        Ucapan: &ldquo;{ord.items[0].customMessage}&rdquo;
                       </div>
                     )}
                   </td>
@@ -144,10 +144,10 @@ export const OrderManagementView: React.FC = () => {
                       className="bg-white border border-[#EADFD9] rounded-lg px-2.5 py-1 text-xs text-[#3B2925] font-medium focus:outline-hidden focus:border-[#C62828] cursor-pointer"
                     >
                       <option value="pending_verification">Menunggu DP</option>
-                      <option value="scheduled_oven">Terjadwal Oven</option>
-                      <option value="baking">Sedang Baking</option>
-                      <option value="decorating_qc">Dekorasi &amp; QC</option>
-                      <option value="in_delivery">Dalam Pengiriman</option>
+                      <option value="scheduled_oven">Jadwal Masuk Dapur</option>
+                      <option value="baking">Sedang Dipanggang</option>
+                      <option value="decorating_qc">Dekorasi &amp; Pengecekan</option>
+                      <option value="in_delivery">Dalam Pengantaran</option>
                       <option value="completed">Selesai</option>
                     </select>
                   </td>
@@ -210,7 +210,7 @@ export const OrderManagementView: React.FC = () => {
                       <div className="font-bold text-[#3B2925]">{it.productName}</div>
                       <div className="text-[#705954]">{it.size} · Jumlah: {it.quantity}</div>
                       {it.customMessage && (
-                        <div className="text-[#C62828] font-medium">Plakat: &ldquo;{it.customMessage}&rdquo;</div>
+                        <div className="text-[#C62828] font-medium">Ucapan: &ldquo;{it.customMessage}&rdquo;</div>
                       )}
                       {it.candleOption && <div>Lilin: {it.candleOption}</div>}
                     </div>
@@ -220,11 +220,11 @@ export const OrderManagementView: React.FC = () => {
 
               <div className="bg-[#FAF7F4] p-3 rounded-xl border border-[#EADFD9] space-y-1.5">
                 <div className="flex justify-between">
-                  <span>Total Pesanan:</span>
+                  <span>Total Nilai Pesanan:</span>
                   <span className="font-bold text-[#3B2925]">Rp {selectedOrder.total.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Nominal DP 50%:</span>
+                  <span>DP Diterima:</span>
                   <span className="font-bold text-[#2E7D32]">Rp {selectedOrder.dpAmount.toLocaleString('id-ID')}</span>
                 </div>
                 <div className="flex justify-between">
@@ -243,7 +243,7 @@ export const OrderManagementView: React.FC = () => {
                 }}
                 className="flex-1 bg-[#C62828] hover:bg-[#9B1B1B] text-white text-xs font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
               >
-                Lihat di Pelacakan Pembeli
+                Lihat Status Pesanan
               </button>
               <button
                 onClick={() => setSelectedOrder(null)}

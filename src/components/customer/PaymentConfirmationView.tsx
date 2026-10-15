@@ -6,6 +6,8 @@ export const PaymentConfirmationView: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState<'bca' | 'mandiri' | 'qris'>('bca');
   const [copied, setCopied] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [proofImage, setProofImage] = useState<string | null>(null);
+  const [proofFileName, setProofFileName] = useState<string>('');
 
   const order = activeOrder || {
     id: '#SB-2026-8942',
@@ -26,6 +28,8 @@ export const PaymentConfirmationView: React.FC = () => {
     ]
   };
 
+  const [rawFile, setRawFile] = useState<File | null>(null);
+
   const vaNumber = selectedMethod === 'bca' 
     ? '8801 2026 8942 01' 
     : '8930 2026 8942 01';
@@ -36,7 +40,24 @@ export const PaymentConfirmationView: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleConfirm = () => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Ukuran file maksimal 5MB. Silakan pilih file yang lebih kecil.');
+        return;
+      }
+      setRawFile(file);
+      setProofFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProofImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleConfirm = async () => {
     setIsSubmitting(true);
     const methodName = selectedMethod === 'qris' 
       ? 'QRIS Dinamis' 
@@ -44,38 +65,47 @@ export const PaymentConfirmationView: React.FC = () => {
         ? 'BCA Virtual Account (8801 2026 8942 01)' 
         : 'Mandiri Virtual Account (8930 2026 8942 01)';
 
-    setTimeout(() => {
-      confirmPaymentProof(order.id, methodName);
-      setIsSubmitting(false);
+    try {
+      if (rawFile) {
+        await confirmPaymentProof(order.id, methodName, rawFile);
+      } else {
+        // Sample fallback blob if testing without picking a local file
+        const blob = new Blob([`Bukti Transfer Sweet Bakery ${order.id}`], { type: 'image/jpeg' });
+        await confirmPaymentProof(order.id, methodName, blob);
+      }
       setCurrentView('status-pesanan');
-    }, 600);
+    } catch (err: any) {
+      alert(err.message || 'Gagal mengunggah bukti pembayaran.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="max-w-4xl mx-auto px-6 lg:px-12 py-10 space-y-8">
       
-      {/* Header & Reservation Alert */}
+      {/* Header & Payment Info */}
       <div className="space-y-3 text-center sm:text-left">
         <div className="inline-block text-xs font-semibold tracking-wider uppercase text-[#C62828] bg-[#FFF5E9] px-3 py-1 rounded-md border border-[#EADFD9]">
-          Langkah Pembayaran
+          Pembayaran Pesanan
         </div>
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#3B2925] tracking-tight">
-          Konfirmasi Pembayaran DP 50%
+          Bayar DP &amp; Konfirmasi
         </h1>
         <p className="text-xs sm:text-sm text-[#705954]">
-          Reservasi slot oven untuk pesanan <strong className="text-[#3B2925]">{order.id}</strong> atas nama <strong className="text-[#3B2925]">{order.customerName}</strong>.
+          Pembayaran uang muka untuk pesanan <strong className="text-[#3B2925]">{order.id}</strong> atas nama <strong className="text-[#3B2925]">{order.customerName}</strong>.
         </p>
       </div>
 
-      {/* Countdown Timer Card */}
+      {/* Notice Card */}
       <div className="bg-[#FFF5E9] border border-[#EADFD9] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <span className="w-10 h-10 rounded-full bg-[#C62828]/10 text-[#C62828] flex items-center justify-center font-bold">
-            <span className="material-symbols-outlined text-[22px]">timer</span>
+            <span className="material-symbols-outlined text-[22px]">schedule</span>
           </span>
           <div className="text-left">
-            <span className="text-xs font-bold text-[#3B2925] block">Selesaikan Pembayaran Sebelum Slot Dilepas</span>
-            <span className="text-[11px] text-[#705954]">Kapasitas oven dapur dibatasi 24 kue per hari.</span>
+            <span className="text-xs font-bold text-[#3B2925] block">Selesaikan Pembayaran Tepat Waktu</span>
+            <span className="text-[11px] text-[#705954]">Kue dibuat berdasarkan pesanan agar rasa dan kualitas tetap segar saat diterima.</span>
           </div>
         </div>
         <div className="bg-white px-4 py-1.5 rounded-xl border border-[#EADFD9] font-mono text-sm font-bold text-[#C62828] tracking-widest shadow-2xs">
@@ -181,21 +211,88 @@ export const PaymentConfirmationView: React.FC = () => {
               </button>
             </div>
             <p className="text-xs text-[#705954] pt-2 border-t border-[#EADFD9]">
-              Transfer tepat sebesar <strong>Rp {order.dpAmount.toLocaleString('id-ID')}</strong>. Verifikasi sistem berjalan otomatis dalam 1–5 menit.
+              Transfer tepat sebesar <strong>Rp {order.dpAmount.toLocaleString('id-ID')}</strong>. Setelah bukti transfer diunggah, tim admin Sweet Bakery akan memeriksa dan memverifikasi pembayaran Anda.
             </p>
           </div>
         )}
 
+        {/* Upload Proof Area */}
+        <div className="bg-white border border-[#EADFD9] rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#3B2925] uppercase tracking-wider flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-[#C62828] text-[18px]">receipt_long</span>
+              <span>Unggah Bukti Transfer / Struk</span>
+            </span>
+            {proofImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setProofImage(null);
+                  setProofFileName('');
+                }}
+                className="text-[11px] text-[#C62828] hover:underline cursor-pointer"
+              >
+                Hapus &amp; Ganti File
+              </button>
+            )}
+          </div>
+
+          {proofImage ? (
+            <div className="flex items-center gap-4 bg-[#FAF7F4] p-3 rounded-xl border border-[#EADFD9]">
+              <img
+                src={proofImage}
+                alt="Preview Bukti Transfer"
+                className="w-16 h-20 object-cover rounded-lg border border-[#EADFD9] shrink-0"
+              />
+              <div className="min-w-0 flex-1 text-xs">
+                <span className="font-bold text-[#3B2925] block truncate">
+                  {proofFileName || 'struk-transfer.jpg'}
+                </span>
+                <span className="text-[11px] text-[#2E7D32] font-semibold flex items-center gap-1 mt-0.5">
+                  <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                  <span>Siap diunggah untuk verifikasi admin</span>
+                </span>
+              </div>
+            </div>
+          ) : (
+            <label className="border-2 border-dashed border-[#EADFD9] hover:border-[#C62828] rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-[#FFFDFB]">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <span className="w-10 h-10 rounded-full bg-[#FFF5E9] text-[#C62828] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+              </span>
+              <div className="text-center">
+                <span className="text-xs font-semibold text-[#3B2925] block">
+                  Pilih Foto / Screenshot Bukti Transfer
+                </span>
+                <span className="text-[10px] text-[#705954]">Format JPG, PNG, atau WEBP</span>
+              </div>
+            </label>
+          )}
+
+          {/* Verification Process Notice */}
+          <div className="bg-[#FFF5E9] p-3 rounded-xl border border-[#EADFD9] flex items-start gap-2.5 text-xs text-[#705954]">
+            <span className="material-symbols-outlined text-[#C62828] text-[18px] shrink-0 mt-0.5">info</span>
+            <p className="leading-relaxed">
+              <strong>Penting:</strong> Pengunggahan bukti transfer tidak otomatis menyelesaikan pesanan. Pembayaran baru berstatus <em>terkonfirmasi</em> setelah diperiksa dan disetujui oleh admin toko Sweet Bakery.
+            </p>
+          </div>
+        </div>
+
         {/* Action Buttons */}
-        <div className="pt-4 flex flex-col sm:flex-row gap-3">
+        <div className="pt-2 flex flex-col sm:flex-row gap-3">
           <button
             type="button"
             onClick={handleConfirm}
             disabled={isSubmitting}
             className="flex-1 inline-flex items-center justify-center gap-2 bg-[#C62828] hover:bg-[#9B1B1B] text-white font-semibold text-sm px-6 py-4 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px]">verified</span>
-            <span>{isSubmitting ? 'Memverifikasi Pembayaran...' : 'Saya Sudah Bayar (Konfirmasi Pembayaran)'}</span>
+            <span className="material-symbols-outlined text-[20px]">upload_file</span>
+            <span>{isSubmitting ? 'Bukti pembayaran sedang diperiksa...' : 'Unggah Bukti Pembayaran'}</span>
           </button>
           
           <a
@@ -205,8 +302,16 @@ export const PaymentConfirmationView: React.FC = () => {
             className="inline-flex items-center justify-center gap-2 border border-[#EADFD9] bg-white hover:bg-[#FFF5E9] text-[#3B2925] font-semibold text-sm px-5 py-4 rounded-full transition-colors"
           >
             <span className="material-symbols-outlined text-[20px] text-[#2E7D32]">chat</span>
-            <span>Konfirmasi via WhatsApp</span>
+            <span>Hubungi Kami</span>
           </a>
+
+          <button
+            type="button"
+            onClick={() => setCurrentView('formulir-pre-order')}
+            className="inline-flex items-center justify-center border border-[#EADFD9] bg-white hover:bg-[#FAF0E6] text-[#705954] text-xs font-semibold px-4 py-4 rounded-full transition-colors cursor-pointer"
+          >
+            Kembali
+          </button>
         </div>
       </div>
 

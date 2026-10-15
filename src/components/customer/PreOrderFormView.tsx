@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 export const PreOrderFormView: React.FC = () => {
-  const { cartItems, removeFromCart, submitPreOrder, setCurrentView } = useApp();
+  const { cartItems, removeFromCart, submitPreOrder, setCurrentView, ovenSlots } = useApp();
 
   const [customerName, setCustomerName] = useState('Nadia Larasati');
   const [customerPhone, setCustomerPhone] = useState('0812-9876-5432');
@@ -17,9 +17,16 @@ export const PreOrderFormView: React.FC = () => {
   const subtotal = cartItems.reduce((acc, curr) => acc + curr.totalPrice, 0);
   const deliveryFee = deliveryMethod === 'courier' ? 60000 : 0;
   const total = subtotal + deliveryFee;
-  const dpAmount = paymentOption === 'dp_50' ? Math.round(total * 0.5) : total;
+  const dpAmount = paymentOption === 'dp_50' ? Math.ceil(total * 0.5) : total;
+  const remainingAmount = total - dpAmount;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if selected date is fully booked
+  const selectedSlot = ovenSlots.find(s => s.dateStr === deliveryDate || s.dateStr.includes(deliveryDate.slice(0, 2)));
+  const isDateFull = selectedSlot ? selectedSlot.status === 'full' : false;
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       alert('Silakan periksa kembali data pesananmu. Keranjang pesanan masih kosong.');
@@ -29,20 +36,30 @@ export const PreOrderFormView: React.FC = () => {
       alert('Silakan pilih tanggal pesanan.');
       return;
     }
+    if (isDateFull) {
+      alert('Tanggal ini sudah penuh. Silakan pilih tanggal lain.');
+      return;
+    }
 
-    submitPreOrder({
-      customerName,
-      customerPhone,
-      customerEmail,
-      deliveryMethod,
-      deliveryAddress: deliveryMethod === 'courier' ? deliveryAddress : 'Toko Sweet Bakery: Jl. Senopati No. 42, Jakarta Selatan',
-      deliveryDate,
-      timeSlot,
-      notes,
-      paymentOption
-    });
-
-    setCurrentView('pembayaran-dp');
+    setIsSubmitting(true);
+    try {
+      await submitPreOrder({
+        customerName,
+        customerPhone,
+        customerEmail,
+        deliveryMethod,
+        deliveryAddress: deliveryMethod === 'courier' ? deliveryAddress : 'Toko Sweet Bakery: Jl. Senopati No. 42, Jakarta Selatan',
+        deliveryDate,
+        timeSlot,
+        notes,
+        paymentOption
+      });
+      setCurrentView('pembayaran-dp');
+    } catch (err: any) {
+      alert(err.message || 'Gagal memproses pesanan di server.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -178,17 +195,32 @@ export const PreOrderFormView: React.FC = () => {
             {/* Jadwal Pengiriman */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
               <div className="space-y-1">
-                <label className="text-xs font-semibold text-[#3B2925]">Pilih Tanggal Acara</label>
+                <label className="text-xs font-semibold text-[#3B2925]">Pilih Tanggal</label>
                 <select
                   value={deliveryDate}
                   onChange={e => setDeliveryDate(e.target.value)}
-                  className="w-full bg-[#FFFDFB] border border-[#EADFD9] rounded-xl px-4 py-2.5 text-sm text-[#3B2925] focus:outline-hidden focus:border-[#C62828] cursor-pointer"
+                  className={`w-full bg-[#FFFDFB] border rounded-xl px-4 py-2.5 text-sm text-[#3B2925] focus:outline-hidden cursor-pointer ${
+                    isDateFull ? 'border-red-500 bg-red-50/40 text-red-700' : 'border-[#EADFD9] focus:border-[#C62828]'
+                  }`}
                 >
-                  <option value="17 Okt 2026">Sabtu, 17 Okt 2026 (Tersedia)</option>
-                  <option value="18 Okt 2026">Minggu, 18 Okt 2026 (Tersedia)</option>
-                  <option value="19 Okt 2026">Senin, 19 Okt 2026 (Tersedia)</option>
-                  <option value="20 Okt 2026">Selasa, 20 Okt 2026 (Tersedia)</option>
+                  {ovenSlots.map(slot => (
+                    <option 
+                      key={slot.dateStr} 
+                      value={slot.dateStr}
+                    >
+                      {slot.dayLabel} ({slot.status === 'full' ? 'Penuh' : slot.status === 'low' ? `Sisa ${slot.totalSlots - slot.bookedSlots} Slot` : 'Tersedia'})
+                    </option>
+                  ))}
+                  <option value="19 Okt 2026">Sen, 19 Okt 2026 (Tersedia)</option>
+                  <option value="20 Okt 2026">Sel, 20 Okt 2026 (Tersedia)</option>
+                  <option value="21 Okt 2026">Rab, 21 Okt 2026 (Tersedia)</option>
                 </select>
+                {isDateFull && (
+                  <p className="text-[11px] font-bold text-red-600 flex items-center gap-1 mt-1">
+                    <span className="material-symbols-outlined text-[14px]">error</span>
+                    <span>Tanggal ini sudah penuh. Silakan pilih tanggal lain.</span>
+                  </p>
+                )}
               </div>
 
               <div className="space-y-1">
@@ -265,7 +297,7 @@ export const PreOrderFormView: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-xs font-bold text-[#C62828] mt-3">
-                  Rp {Math.round(total * 0.5).toLocaleString('id-ID')}
+                  Rp {dpAmount.toLocaleString('id-ID')}
                 </div>
               </label>
 
@@ -370,25 +402,45 @@ export const PreOrderFormView: React.FC = () => {
                 <span>Total Nilai Pesanan</span>
                 <span>Rp {total.toLocaleString('id-ID')}</span>
               </div>
-              {paymentOption === 'dp_50' && (
-                <div className="flex justify-between text-xs text-[#C62828] bg-[#FFF5E9] p-2.5 rounded-lg border border-[#EADFD9] font-bold">
-                  <span>DP 50% yang Harus Dibayar</span>
-                  <span>Rp {dpAmount.toLocaleString('id-ID')}</span>
+              {paymentOption === 'dp_50' ? (
+                <>
+                  <div className="flex justify-between text-xs text-[#C62828] bg-[#FFF5E9] p-2.5 rounded-lg border border-[#EADFD9] font-bold">
+                    <span>DP 50% yang Harus Dibayar</span>
+                    <span>Rp {dpAmount.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] text-[#705954] px-1">
+                    <span>Sisa Pelunasan (H-1 Kirim)</span>
+                    <span className="font-semibold text-[#3B2925]">Rp {remainingAmount.toLocaleString('id-ID')}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between text-xs text-[#2E7D32] bg-green-50 p-2.5 rounded-lg border border-green-200 font-bold">
+                  <span>Pembayaran Lunas (100%)</span>
+                  <span>Rp {total.toLocaleString('id-ID')}</span>
                 </div>
               )}
             </div>
 
             {/* Submit Action */}
-            <button
-              type="submit"
-              disabled={cartItems.length === 0}
-              className={`w-full inline-flex items-center justify-center gap-2 text-white font-semibold text-sm px-6 py-4 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer ${
-                cartItems.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#C62828] hover:bg-[#9B1B1B]'
-              }`}
-            >
-              <span>{paymentOption === 'dp_50' ? 'Lanjutkan ke Pembayaran DP' : 'Lanjutkan ke Pembayaran'}</span>
-              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-            </button>
+            <div className="space-y-2 pt-2">
+              <button
+                type="submit"
+                disabled={cartItems.length === 0 || isDateFull}
+                className={`w-full inline-flex items-center justify-center gap-2 text-white font-semibold text-sm px-6 py-4 rounded-full shadow-md hover:shadow-lg transition-all cursor-pointer ${
+                  cartItems.length === 0 || isDateFull ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#C62828] hover:bg-[#9B1B1B]'
+                }`}
+              >
+                <span>Konfirmasi Pesanan</span>
+                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentView('katalog-kue')}
+                className="w-full inline-flex items-center justify-center gap-1.5 text-xs font-semibold text-[#705954] hover:text-[#3B2925] py-2 cursor-pointer transition-colors"
+              >
+                <span>← Kembali ke Katalog Kue</span>
+              </button>
+            </div>
 
             <div className="text-center">
               <span className="text-[11px] text-[#705954]">

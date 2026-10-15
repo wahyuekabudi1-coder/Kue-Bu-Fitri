@@ -2,20 +2,17 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 export const OvenCalendarView: React.FC = () => {
-  const { ovenSlots, ovenBatches } = useApp();
+  const { ovenSlots, ovenBatches, updateBatchStatus } = useApp();
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(3); // Default to Thursday (Hari ini)
-  const [batches, setBatches] = useState(ovenBatches);
 
   const selectedSlot = ovenSlots[selectedDayIndex] || ovenSlots[0];
 
   const toggleBatchStatus = (batchId: string) => {
-    setBatches(prev => prev.map(b => {
-      if (b.id === batchId) {
-        const nextStatus = b.status === 'scheduled' ? 'in_progress' : b.status === 'in_progress' ? 'completed' : 'scheduled';
-        return { ...b, status: nextStatus };
-      }
-      return b;
-    }));
+    const current = ovenBatches.find(b => b.id === batchId);
+    if (current) {
+      const nextStatus = current.status === 'scheduled' ? 'in_progress' : current.status === 'in_progress' ? 'completed' : 'scheduled';
+      updateBatchStatus(batchId, nextStatus);
+    }
   };
 
   return (
@@ -25,13 +22,13 @@ export const OvenCalendarView: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-[#C62828] bg-[#FFF5E9] px-2.5 py-1 rounded-md border border-[#EADFD9]">
-            Kitchen Scheduling
+            Jadwal Dapur
           </span>
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#3B2925] mt-1">
-            Kalender Produksi Oven Dapur
+            Jadwal Produksi
           </h1>
           <p className="text-xs text-[#705954]">
-            Kapasitas Maksimal: 24 Slot Kue / Hari (Dapur Senopati) · Batas reservasi H-2
+            Kapasitas dapur: 24 pesanan per hari · Pemesanan minimal H-2
           </p>
         </div>
 
@@ -41,7 +38,7 @@ export const OvenCalendarView: React.FC = () => {
             className="inline-flex items-center gap-2 bg-white border border-[#EADFD9] hover:bg-[#FFF5E9] text-[#3B2925] text-xs font-semibold px-4 py-2.5 rounded-xl transition-colors cursor-pointer shadow-2xs"
           >
             <span className="material-symbols-outlined text-[18px]">print</span>
-            <span>Cetak Baking Sheet</span>
+            <span>Cetak Jadwal</span>
           </button>
         </div>
       </div>
@@ -50,9 +47,9 @@ export const OvenCalendarView: React.FC = () => {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-serif text-sm font-bold text-[#3B2925]">
-            Kapasitas Slot Oven Harian · Oktober 2026 (Pekan ke-3)
+            Kapasitas Produksi Harian
           </h3>
-          <span className="text-xs text-[#705954]">Klik hari untuk melihat batch produksi</span>
+          <span className="text-xs text-[#705954]">Pilih hari untuk melihat jadwal pembuatan kue</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
@@ -112,10 +109,10 @@ export const OvenCalendarView: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#EADFD9] gap-3">
           <div>
             <h2 className="font-serif text-xl font-bold text-[#3B2925]">
-              Rincian Batch Produksi ({selectedSlot.dayLabel})
+              Rincian Jadwal Produksi ({selectedSlot.dayLabel})
             </h2>
             <p className="text-xs text-[#705954] mt-0.5">
-              Alokasi Deck Oven &amp; Stasiun Pemanggangan Dapur Atelier Senopati
+              Jadwal pemanggangan dan persiapan kue di dapur Sweet Bakery
             </p>
           </div>
           <div className="text-xs bg-[#FFF5E9] border border-[#EADFD9] px-3.5 py-1.5 rounded-full text-[#C62828] font-bold">
@@ -125,7 +122,7 @@ export const OvenCalendarView: React.FC = () => {
 
         {/* Batches Cards */}
         <div className="space-y-4">
-          {batches.map(batch => (
+          {ovenBatches.map(batch => (
             <div
               key={batch.id}
               className="p-5 rounded-2xl border border-[#EADFD9] bg-[#FAF7F4] hover:bg-white transition-all space-y-4"
@@ -133,7 +130,7 @@ export const OvenCalendarView: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="w-10 h-10 rounded-xl bg-[#FFF5E9] text-[#C62828] flex items-center justify-center font-bold">
-                    <span className="material-symbols-outlined text-[22px]">oven_gen</span>
+                    <span className="material-symbols-outlined text-[22px]">microwave</span>
                   </span>
                   <div>
                     <h4 className="font-serif font-bold text-base text-[#3B2925]">{batch.name}</h4>
@@ -159,7 +156,7 @@ export const OvenCalendarView: React.FC = () => {
                           : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     }`}
                   >
-                    {batch.status === 'completed' ? '✓ Selesai' : batch.status === 'in_progress' ? '🔥 Baking' : '⏳ Terjadwal'}
+                    {batch.status === 'completed' ? '✓ Selesai' : batch.status === 'in_progress' ? '🔥 Dipanggang' : '⏳ Terjadwal'}
                   </button>
                 </div>
               </div>
