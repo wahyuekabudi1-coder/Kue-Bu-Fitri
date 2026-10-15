@@ -1,0 +1,8 @@
+{
+  "name": "Sweet Bakery",
+  "description": "Toko kue lokal dengan aneka pilihan kue ulang tahun, pernikahan, brownies, dan hantaran yang dibuat berdasarkan pesanan dengan bahan pilihan berkualitas.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
